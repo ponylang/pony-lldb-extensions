@@ -106,7 +106,7 @@ def _char_or_dot(c):
 
 
 def _register_summary(debugger, function_name, type_name):
-    print "registering '%s'" % (type_name,)
+    print("registering '%s'" % (type_name,))
     summary = lldb.SBTypeSummary.CreateWithFunctionName(function_name)
     summary.SetOptions(lldb.eTypeOptionHideChildren)
     debugger.GetDefaultCategory().AddTypeSummary(
