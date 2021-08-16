@@ -1,7 +1,15 @@
+"""
+Pony LLDB extensions
+"""
+# pylint: disable=W0613
+# pylint: disable=C0103
 import lldb
 
 
 def pony_string_summary(value, *rest):
+    """
+    Prints the summary for a pony string
+    """
     target = lldb.debugger.GetSelectedTarget()
     char_ptr_type = target.FindFirstType('char').GetPointerType()
     str_data = value.GetChildMemberWithName("_ptr").Cast(char_ptr_type)
@@ -20,6 +28,9 @@ def pony_string_summary(value, *rest):
 
 
 def pony_array_i32_summary(value, *rest):
+    """
+    Prints the summary for a pony i32 array
+    """
     target = lldb.debugger.GetSelectedTarget()
     u32_ptr_type = target.FindFirstType('int').GetPointerType()
     a_data = value.GetChildMemberWithName("_ptr").Cast(u32_ptr_type)
@@ -43,6 +54,9 @@ def pony_array_i32_summary(value, *rest):
 
 
 def pony_array_u32_summary(value, *rest):
+    """
+    Prints the summary for a pony u32 array
+    """
     target = lldb.debugger.GetSelectedTarget()
     u32_ptr_type = target.FindFirstType('int').GetPointerType()
     a_data = value.GetChildMemberWithName("_ptr").Cast(u32_ptr_type)
@@ -66,6 +80,9 @@ def pony_array_u32_summary(value, *rest):
 
 
 def pony_array_u8_summary(value, *rest):
+    """
+    Prints the summary for a pony u8 array
+    """
     target = lldb.debugger.GetSelectedTarget()
     u8_ptr_type = target.FindFirstType('char').GetPointerType()
     a_data = value.GetChildMemberWithName("_ptr").Cast(u8_ptr_type)
