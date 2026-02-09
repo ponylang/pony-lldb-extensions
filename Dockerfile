@@ -9,6 +9,6 @@ RUN apt-get update \
   && apt-get -y clean
 
 RUN pip3 install --break-system-packages \
-  pylint==2.9.3
+  pylint==3.3.9
 
 COPY pony_lldb.py /pony_lldb.py
