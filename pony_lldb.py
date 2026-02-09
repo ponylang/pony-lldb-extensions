@@ -3,6 +3,7 @@ Pony LLDB extensions
 """
 # pylint: disable=W0613
 # pylint: disable=C0103
+# pylint: disable=I1101
 import lldb
 
 
@@ -24,7 +25,7 @@ def pony_string_summary(value, *rest):
     bs = data.ReadRawData(error, 0, size)
     if bs is None:
         return '"<bs is stupid>": ' + error.description
-    return '"%s"' % (bs.decode('utf-8').encode('utf-8'))
+    return f'"{bs.decode("utf-8").encode("utf-8")}"'
 
 
 def pony_array_i32_summary(value, *rest):
@@ -50,7 +51,7 @@ def pony_array_i32_summary(value, *rest):
             return '<error reading item>'
         v.append(x)
 
-    return ' '.join(["[%d]=%d" % (i, x) for (i, x) in enumerate(v)])
+    return ' '.join([f"[{i}]={x}" for (i, x) in enumerate(v)])
 
 
 def pony_array_u32_summary(value, *rest):
@@ -76,7 +77,7 @@ def pony_array_u32_summary(value, *rest):
             return '<error reading item>'
         v.append(x)
 
-    return ' '.join(["[%d]=%08x" % (i, x) for (i, x) in enumerate(v)])
+    return ' '.join([f"[{i}]={x:08x}" for (i, x) in enumerate(v)])
 
 
 def pony_array_u8_summary(value, *rest):
@@ -108,11 +109,10 @@ def _hex_dump(bs):
     for i in range(0, total_rows + 1):
         row_start = i * columns_per_row
         row_data = bs[row_start:(row_start + columns_per_row)]
-        row_num = ("%08x" % (row_start,))
-        nums = ' '.join(["%02x" % (b,) for b in row_data])
+        row_num = f"{row_start:08x}"
+        nums = ' '.join([f"{b:02x}" for b in row_data])
         protected_chars = ''.join([_char_or_dot(chr(b)) for b in row_data])
-        rows.append("%s: %s |%s|" % (row_num, nums.ljust(50),
-                                     protected_chars.ljust(columns_per_row)))
+        rows.append(f"{row_num}: {nums.ljust(50)} |{protected_chars.ljust(columns_per_row)}|")
     return '\n' + '\n'.join(rows)
 
 
@@ -123,7 +123,7 @@ def _char_or_dot(c):
 
 
 def _register_summary(debugger, function_name, type_name):
-    print("registering '%s'" % (type_name,))
+    print(f"registering '{type_name}'")
     summary = lldb.SBTypeSummary.CreateWithFunctionName(function_name)
     summary.SetOptions(lldb.eTypeOptionHideChildren)
     debugger.GetDefaultCategory().AddTypeSummary(
@@ -134,16 +134,16 @@ def __lldb_init_module(debugger, *rest):
     _register_summary(debugger, 'pony_lldb.pony_string_summary', 'String *')
 
     for refcap in ['ref', 'val', 'box']:
-        type_name = "Array_I32_%s *" % (refcap,)
+        type_name = f"Array_I32_{refcap} *"
         _register_summary(debugger, 'pony_lldb.pony_array_i32_summary',
                           type_name)
 
     for refcap in ['ref', 'val', 'box']:
-        type_name = "Array_U32_%s *" % (refcap,)
+        type_name = f"Array_U32_{refcap} *"
         _register_summary(debugger, 'pony_lldb.pony_array_u32_summary',
                           type_name)
 
     for refcap in ['ref', 'val', 'box']:
-        type_name = "Array_U8_%s *" % (refcap,)
+        type_name = f"Array_U8_{refcap} *"
         _register_summary(debugger, 'pony_lldb.pony_array_u8_summary',
                           type_name)
